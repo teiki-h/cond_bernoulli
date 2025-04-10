@@ -15,8 +15,7 @@ and implement the corresponding algorithm for different values of N and p=
 (p1,...,pN ). What is the main drawback of this approach? Study the acceptance
 rate as a function of N (and/or different vectors p).
 
-2) The aforementioned paper proposes an exact algorithm (see Appendix A). Imple-
-ment it and explain why it has complexity O(N2).
+2) The aforementioned paper proposes an exact algorithm (see Appendix A). Implement it and explain why it has complexity O(N2).
 
 3)  Implement the MCMC sampler proposed at the beginning of the paper, and explain
 why it is valid (i.e. why it leaves invariant the target distribution). How to do
