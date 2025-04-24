@@ -22,11 +22,13 @@ class sampler:
             raise ValueError("p is such that it's impossible to simulate a random variable following CB(p,I)")
         pass
     
-    def _calculate_expectation(self):
+    def _calculate_expectation(self, u = None):
+        if u is None:
+            u = lambda x : x
         omega = self._generate_sequences()
         res = 0
         for x in omega:
-            res += self.f(x) * x
+            res += self.f(x) * u(x)
         return res
     
     def _generate_sequences(self, N = None,I = None):
