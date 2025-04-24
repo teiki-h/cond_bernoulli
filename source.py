@@ -235,7 +235,7 @@ class RQMC_sampler(exact_sampler):
             X[-1] = 1
         return X
     
-    def sample_generator(self, L=1, sequence = 0, RQMC = False, scramble_seq = True):
+    def sample_generator(self, L=1, sequence = 0, RQMC = False):
         ''' sequence :  0 if Sobol
                         1 if Halton
                         2 if true random 
@@ -249,16 +249,13 @@ class RQMC_sampler(exact_sampler):
         low_discrep_sampler = None
         match sequence:
             case 0:
-                low_discrep_sampler = qmc.Sobol(d=self.N, scramble = scramble_seq)
+                low_discrep_sampler = qmc.Sobol(d=self.N, scramble = RQMC)
                 U = low_discrep_sampler.random(n = L)
             case 1:
-                low_discrep_sampler = qmc.Halton(d=self.N, scramble = scramble_seq)
+                low_discrep_sampler = qmc.Halton(d=self.N, scramble = RQMC)
                 U = low_discrep_sampler.random(n = L)
             case 2:
                 U = np.random.uniform(0, 1, (L,self.N))
-        
-        if RQMC:
-            U = ( U + np.random.uniform(0, 1, (L,self.N)) ) % 1
         
         for i in range(L):
             res.append(self._sample_one(U[i]))
