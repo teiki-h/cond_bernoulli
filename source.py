@@ -22,6 +22,13 @@ class sampler:
             raise ValueError("p is such that it's impossible to simulate a random variable following CB(p,I)")
         pass
     
+    def _calculate_expectation(self):
+        omega = self._generate_sequences()
+        res = 0
+        for x in omega:
+            res += self.f(x) * x
+        return res
+    
     def _generate_sequences(self, N = None,I = None):
         '''get all the sequences of size N with I ones and the rest are zeros
         '''
@@ -65,7 +72,7 @@ class sampler:
 
         return f
 
-    def chi_squared_adequation(self):
+    def chi_squared_adequation(self,print_result = True):
         if self.sample is None:
             raise Exception("sample before using chi_squared")
         L = len(self.sample)
@@ -83,10 +90,11 @@ class sampler:
         expected_freq = [L * self.f(np.array(index_to_omega[i])).tolist() for i in range(len(omega))]
         
         chi2_stat, p_value = chisquare(observed_freq, expected_freq)
-        print("Pour le test du Chi2 avec hypothèse nulle H0 = 'notre sample suit une loi Conditionnal Bernoulli de paramètres (p,I)'")
-        print(f"statistique du chi2 : {chi2_stat}")
-        print(f"p-valeur : {p_value}")
-        print(f"l'hypothèse nulle {'est rejeté' if p_value<=0.1 else "n'est pas rejeté"} à 10%")
+        if print_result:
+            print("Pour le test du Chi2 avec hypothèse nulle H0 = 'notre sample suit une loi Conditionnal Bernoulli de paramètres (p,I)'")
+            print(f"statistique du chi2 : {chi2_stat}")
+            print(f"p-valeur : {p_value}")
+            print(f"l'hypothèse nulle {'est rejeté' if p_value<=0.1 else "n'est pas rejeté"} à 10%")
         return p_value
 
 class rejection_sampler(sampler):
@@ -207,18 +215,12 @@ class exact_sampler(sampler):
             res.append(self._sample_one())
         self.sample = np.array(res)
 
-class RQMC(exact_sampler):
+class RQMC_sampler(exact_sampler):
     def __init__(self, p, I):
         super().__init__(p, I)
         pass
     
     def _sample_one(self, U):
-        ''' sequence :  0 if Sobol
-                        1 if Halton
-            scramble_seq:   True if we scramble the sequence
-                            False if we do not
-            RQMC:   True if we do Randomized Quasi Monte Carlo
-                    False if we do Quasi Monte Carlo'''
         X = np.zeros(self.N, dtype = int)
         
         i_n_min_1 = 0
